@@ -4,7 +4,7 @@ import { LoginForm } from './LoginForm';
 import { InlineButton } from './InlineButton';
 import { firebaseConfig } from '../firebaseConfig';
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,7 +19,6 @@ function App() {
         const user = userCredential.user;
         setIsLoggedIn(true);
         setUserName(user.email);
-        console.log(`you are logged in as ${user.email}`)
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -29,11 +28,16 @@ function App() {
   };
 
   const handleLogButtonClick = () => {
-    console.log('handling button click');
+    signOut(auth).then(() => {
+      setIsLoggedIn(false);
+      setUserName('');
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
-  const loginStatusMessage = `LOGIN STATUS: You are currently ${!isLoggedIn ? 'not' : ''} logged in ${isLoggedIn ? `as ${userName}` : ''}. `;
-  // const logButton = isLoggedIn ? <InlineButton buttonText="Log out?" /> : <InlineButton buttonText="Log in?" />
+  const loginStatusMessage = `LOGIN STATUS: You are currently ${!isLoggedIn ? 'not' : ''} logged in${isLoggedIn ? ` as ${userName}` : ''}. `;
+  const logButton = isLoggedIn ? <InlineButton buttonText="Log out?" handleClick={handleLogButtonClick} /> : "Log in?";
 
   return (
     <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
@@ -41,7 +45,7 @@ function App() {
       <div className="w-100 text-center text-info">
         <p>
           {loginStatusMessage}
-          <InlineButton buttonText={isLoggedIn ? "Log out?" : "Log in?"} handleClick={handleLogButtonClick} />
+          {logButton}
         </p>
       </div>
         {!isLoggedIn && <LoginForm onLogin={handleLogin} />}
