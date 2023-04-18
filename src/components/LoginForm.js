@@ -1,10 +1,13 @@
-import React from 'react'
-import { Form, Button, Card, Alert } from "react-bootstrap"
+import React, { useRef } from 'react';
+import { Form, Button, Card, Alert } from "react-bootstrap";
 
-export const LoginForm = () => {
+export const LoginForm = ({ onLogin }) => {
+  const emailRef = useRef();
+  const passwordRef = useRef();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('submitting form, just kidding not really')
+    const loginInfo = { email: emailRef.current.value, password: passwordRef.current.value };
+    onLogin(loginInfo);
   };
 
   return (
@@ -15,11 +18,11 @@ export const LoginForm = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group id="email" className="mb-4">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" required />
+              <Form.Control type="email" ref={emailRef} required />
             </Form.Group>
             <Form.Group id="password" className="mb-4">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" required />
+              <Form.Control type="password" ref={passwordRef} required />
             </Form.Group>
             <Button type="submit" className="w-100">Log In</Button>
           </Form>
