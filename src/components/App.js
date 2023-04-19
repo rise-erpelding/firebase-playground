@@ -18,6 +18,7 @@ function App() {
       .then((userCredential) => {
         const user = userCredential.user;
         setIsLoggedIn(true);
+        // pls note this is the wrong way to get the user, you should use onAuthStateChanged or auth.currentUser but... we're trying to get it done right now
         setUserName(user.email);
       })
       .catch((error) => {
@@ -26,6 +27,21 @@ function App() {
         console.error(`${errorCode}: ${errorMessage}`);
       })
   };
+
+  const createNewAccount = (accountInfo) => {
+    const { email, password } = accountInfo;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        setIsLoggedIn(true);
+        setUserName(user.email);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode}: ${errorMessage}`);
+      })
+  }
 
   const handleLogButtonClick = () => {
     signOut(auth).then(() => {
@@ -48,7 +64,7 @@ function App() {
           {logButton}
         </p>
       </div>
-        {!isLoggedIn && <LoginForm onLogin={handleLogin} />}
+        {!isLoggedIn && <LoginForm onLogin={handleLogin} onCreateAccount={createNewAccount} />}
       </div>
     </Container>
   );
